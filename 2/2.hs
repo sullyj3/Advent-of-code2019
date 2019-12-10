@@ -7,6 +7,7 @@ import Data.Array.Unboxed
 
 import Data.Array.IArray ((!))
 
+import Data.List (find)
 import Data.List.Split (splitOn)
 import Data.Maybe (fromJust)
 
@@ -19,12 +20,21 @@ main = do
       initialMem :: UArray Int Int
       initialMem = listArray (0, length intcodes - 1) intcodes
 
+  putStrLn "part 1"
   print $ part1 initialMem
+
+  putStrLn "part 2"
+  print $ part2 initialMem
 
 part1 :: UArray Int Int -> Int
 part1 initialMem = finalMem ! 0 where
   finalMem :: UArray Int Int
   finalMem = execute 12 2 initialMem
+
+part2 :: UArray Int Int -> Int
+part2 initialMem = 100 * noun + verb where
+  Just (noun, verb) = find (\(n,v) -> execute n v initialMem ! 0 == 19690720)
+                      [ (n,v) | n <- [0..99], v <- [0..99] ]
 
 execute :: Int -> Int -> UArray Int Int -> UArray Int Int
 execute noun verb initialMem = runSTUArray $ do
