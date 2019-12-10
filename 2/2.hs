@@ -16,45 +16,49 @@ main = do
   let intcodes :: [Int]
       intcodes = map read . splitOn "," $ input
 
-  print $ part1 intcodes
+      initialMem :: UArray Int Int
+      initialMem = listArray (0, length intcodes - 1) intcodes
 
-part1 :: [Int] -> Int
-part1 intcodes = finalMemory ! 0 where
-  finalMemory :: UArray Int Int
-  finalMemory = runSTUArray $
+  print $ part1 initialMem
 
-    do memory <- newListArray (0,length intcodes-1) intcodes
+part1 :: UArray Int Int -> Int
+part1 initialMem = finalMem ! 0 where
+  finalMem :: UArray Int Int
+  finalMem = execute 12 2 initialMem
 
-       -- restore 1202 program alarm state
-       writeArray memory 1 12
-       writeArray memory 2 2
+execute :: Int -> Int -> UArray Int Int -> UArray Int Int
+execute noun verb initialMem = runSTUArray $ do
+  memory <- thaw initialMem
+  writeArray memory 1 noun
+  writeArray memory 2 verb
 
-       -- run program
-       headRef <- newSTRef 0
+  -- run program
+  instructPtrRef <- newSTRef 0
 
-       let loop = do head <- readSTRef headRef
-                     op <- readArray memory head
-                     case op of
-                       1 -> runOp (+) headRef memory >> loop
-                       2 -> runOp (*) headRef memory >> loop
-                       99 -> return ()
+  let loop = do instructPtr <- readSTRef instructPtrRef
+                op <- readArray memory instructPtr
+                case op of
+                  1 -> runOp (+) instructPtrRef memory >> loop
+                  2 -> runOp (*) instructPtrRef memory >> loop
+                  99 -> return ()
+                  n -> return () -- invalid opCode
 
-       loop
-       return memory
+  loop
+  return memory
 
 runOp :: (Int -> Int -> Int)
       -> STRef s Int 
       -> STUArray s Int Int 
       -> ST s ()
-runOp op headRef arr = do
-  head <- readSTRef headRef
+runOp op instructPtrRef arr = do
+  instructPtr <- readSTRef instructPtrRef
 
-  posA <- readArray arr (head + 1)
-  posB <- readArray arr (head + 2)
+  posA <- readArray arr (instructPtr + 1)
+  posB <- readArray arr (instructPtr + 2)
 
   a <- readArray arr posA
   b <- readArray arr posB
 
-  writeLoc <- readArray arr (head + 3)
+  writeLoc <- readArray arr (instructPtr + 3)
   writeArray arr writeLoc (a `op` b)
-  modifySTRef headRef (+4)
+  modifySTRef instructPtrRef (+4)
