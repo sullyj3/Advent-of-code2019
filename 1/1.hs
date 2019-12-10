@@ -27,7 +27,7 @@ part2 moduleMasses = sum . map part2Fuel $ moduleMasses
 part2Fuel :: Int -> Int
 part2Fuel mass = sum
                . takeWhile (>0)
-               . tail
+               . tail -- don't include the mass of the module itself
                . iterate fuelOfFuel
                $ mass
 
