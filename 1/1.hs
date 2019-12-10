@@ -1,3 +1,4 @@
+import Flow
 import Data.List (unfoldr)
 
 main = do
@@ -18,17 +19,17 @@ fuel :: Int -> Int
 fuel mass = mass `div` 3 - 2
 
 part1 :: [Int] -> Int
-part1 = sum . map fuel
+part1 moduleMasses = sum . map fuel $ moduleMasses
 
 part2 :: [Int] -> Int
-part2 = sum . map part2Fuel
+part2 moduleMasses = sum . map part2Fuel $ moduleMasses
 
 part2Fuel :: Int -> Int
-part2Fuel mass = sum $ unfoldr fuelOfFuel mass
+part2Fuel mass = sum
+               . takeWhile (>0)
+               . tail
+               . iterate fuelOfFuel
+               $ mass
 
-fuelOfFuel :: Int -> Maybe (Int, Int)
-fuelOfFuel mass
-  | mass <= 0 = Nothing
-  | otherwise = let next = fuel mass in
-    if next > 0 then Just (next, next)
-                else Nothing
+fuelOfFuel :: Int -> Int
+fuelOfFuel mass = max 0 (fuel mass)
