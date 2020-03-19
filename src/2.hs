@@ -1,3 +1,7 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE ExplicitForAll #-}
+--{-# LANGUAGE BlockArguments #-}
+
 import Control.Monad.ST
 
 import Data.STRef
@@ -45,13 +49,14 @@ execute noun verb initialMem = runSTUArray $ do
   -- run program
   instructPtrRef <- newSTRef 0
 
-  let loop = do instructPtr <- readSTRef instructPtrRef
-                op <- readArray memory instructPtr
-                case op of
-                  1 -> runOp (+) instructPtrRef memory >> loop
-                  2 -> runOp (*) instructPtrRef memory >> loop
-                  99 -> return ()
-                  n -> return () -- invalid opCode
+  let loop = do
+        instructPtr <- readSTRef instructPtrRef
+        op <- readArray memory instructPtr
+        case op of
+          1 -> runOp (+) instructPtrRef memory >> loop
+          2 -> runOp (*) instructPtrRef memory >> loop
+          99 -> return ()
+          n -> return () -- invalid opCode
 
   loop
   return memory

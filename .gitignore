@@ -1,0 +1,4 @@
+.stack-work/
+AOC.cabal
+*~
+stack*.yaml.lock
