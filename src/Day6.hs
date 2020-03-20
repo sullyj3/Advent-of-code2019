@@ -13,6 +13,7 @@ import Data.Map.Append.Strict (AppendMap(..))
 import qualified Data.Set as Set
 import Data.Set (Set)
 
+import Data.Maybe
 import Data.Monoid (Sum(..), getSum)
 import Data.Foldable (foldMap, traverse_, find)
 
@@ -75,11 +76,11 @@ orbitTree orbitGraph = go "COM"
   where go s = let children = orbitGraph ! s
                in Node s (map go $ Set.toList children)
 
+
 lca :: Eq a => a -> a -> RoseTree a -> Maybe (RoseTree a)
-lca a b (Node x ts) = case find (\t -> a `elem` t && b `elem` t) ts
-  of Just t -> case lca a b t of Nothing -> Just t
-                                 Just u -> Just u
-     Nothing -> Nothing
+lca a b (Node x ts) = do
+  ca <- find (\t -> a `elem` t && b `elem` t) ts
+  pure $ fromMaybe ca $ lca a b ca
 
 
 annotateDepth :: Ord a => RoseTree a -> RoseTree (Int, a)
