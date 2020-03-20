@@ -1,21 +1,18 @@
-module Day1 where
+module Day1
+( run
+)
+where
 
 import Flow
+import Data.Functor
 import Data.List (unfoldr)
 
-main = do
-  input <- readFile "input.txt"
+run :: Int -> IO ()
+run 1 = getMasses <&> part1 >>= print
+run 2 = getMasses <&> part2 >>= print
 
-  let masses :: [Int]
-      masses = map read . lines $ input 
-
-  putStrLn "part 1"
-  print $ part1 masses
-
-  putStrLn ""
-
-  putStrLn "part 2"
-  print $ part2 masses
+getMasses :: IO [Int]
+getMasses = readFile "input/1.txt" <&> lines .> map read
 
 fuel :: Int -> Int
 fuel mass = mass `div` 3 - 2
