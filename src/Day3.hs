@@ -3,6 +3,9 @@
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+
+module Day3 where
+
 import Flow
 import qualified Data.Set as S
 import Data.Set (Set)

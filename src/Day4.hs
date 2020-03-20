@@ -2,6 +2,8 @@
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE PatternSynonyms #-}
 
+module Day4 where
+
 import Flow
 import Data.List (group)
 
@@ -53,7 +55,4 @@ part2 = monotonicize start
   .> count (digits .> containsDouble)
   where
     (start, end) = (235741,706948)
-
-main = pure ()
-
 

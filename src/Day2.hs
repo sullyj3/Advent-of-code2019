@@ -1,6 +1,8 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE ExplicitForAll #-}
 --{-# LANGUAGE BlockArguments #-}
+--
+module Day2 where
 
 import Control.Monad.ST
 
