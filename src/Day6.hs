@@ -40,8 +40,8 @@ doPart1 = getOrbits <&> part1
 doPart2 = getOrbits <&> part2
 
 part1 :: [Orbit] -> Int
-part1 = orbitMap
-     .> toTree
+part1 = orbitGraph
+     .> orbitTree
      .> annotateDepth
      .> treeMap fst
      .> foldMap Sum
@@ -50,7 +50,7 @@ part1 = orbitMap
 part2 :: [Orbit] -> Int
 part2 orbits = let
 
-    t = orbits |> orbitMap .> toTree
+    t = orbits |> orbitGraph .> orbitTree
     Just commonOrbit = lca "YOU" "SAN" t
     commonOrbitDepths = annotateDepth commonOrbit
     Just (youDepth, _you) = find (snd .> (=="YOU")) commonOrbitDepths
@@ -61,8 +61,8 @@ part2 orbits = let
 allBodies :: [Orbit] -> Set String
 allBodies = foldl (\acc (Orbit s1 s2) -> [s1,s2] <> acc) mempty
 
-orbitMap :: [Orbit] -> Map String (Set String)
-orbitMap orbits = unAppendMap $ foldl addBodies mempty orbits
+orbitGraph :: [Orbit] -> Map String (Set String)
+orbitGraph orbits = unAppendMap $ foldl addBodies mempty orbits
   where
     addBodies :: AppendMap String (Set String) -> Orbit -> AppendMap String (Set String)
     addBodies acc (Orbit s1 s2) = acc <> (AppendMap $ [(s1, [s2]), (s2, [])])
@@ -72,9 +72,9 @@ data RoseTree a = Node a [RoseTree a]
 
 treeMap f (Node x ts) = Node (f x) (map (treeMap f) ts)
 
-toTree :: Map String (Set String) -> RoseTree String
-toTree orbitMap = go "COM"
-  where go s = let children = orbitMap ! s
+orbitTree :: Map String (Set String) -> RoseTree String
+orbitTree orbitGraph = go "COM"
+  where go s = let children = orbitGraph ! s
                in Node s (map go $ Set.toList children)
 
 lca :: Eq a => a -> a -> RoseTree a -> Maybe (RoseTree a)
