@@ -69,11 +69,9 @@ execute initialMem input = runSTUArray2 do
   memory :: STUArray s Int Int
          <- thaw initialMem
 
-  -- run program
   instructPtrRef <- newSTRef 0
 
-
-  let -- loop :: [Int] -> _
+  let
       loop output = do
         instruction <- parseInstruction instructPtrRef memory
         case instruction of
@@ -121,7 +119,6 @@ execute initialMem input = runSTUArray2 do
       jump arg = do
         addr <- resolveArg arg memory
         writeSTRef instructPtrRef addr
-
 
   output <- reverse <$> loop []
   return (memory, output)
