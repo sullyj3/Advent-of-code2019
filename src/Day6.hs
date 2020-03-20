@@ -58,8 +58,6 @@ part2 orbits = let
 
   in youDepth - 1 + sanDepth - 1
 
-allBodies :: [Orbit] -> Set String
-allBodies = foldl (\acc (Orbit s1 s2) -> [s1,s2] <> acc) mempty
 
 orbitGraph :: [Orbit] -> Map String (Set String)
 orbitGraph orbits = unAppendMap $ foldl addBodies mempty orbits
