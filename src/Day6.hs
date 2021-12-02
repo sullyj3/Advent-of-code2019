@@ -80,7 +80,7 @@ orbitTree orbitGraph = go "COM"
 lca :: Eq a => a -> a -> RoseTree a -> Maybe (RoseTree a)
 lca a b (Node x ts) = do
   ca <- find (\t -> a `elem` t && b `elem` t) ts
-  pure $ fromMaybe ca $ lca a b ca
+  pure $ fromMaybe ca (lca a b ca)
 
 
 annotateDepth :: Ord a => RoseTree a -> RoseTree (Int, a)
